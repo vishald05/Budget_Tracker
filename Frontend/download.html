@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Download PDF</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Download Expense Report</h1>
+    <form id="download-form">
+      <label>From:</label>
+      <input type="date" id="from" required />
+      <label>To:</label>
+      <input type="date" id="to" required />
+      <button type="submit">Download PDF</button>
+    </form>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    document.getElementById('download-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+
+      const url = `http://localhost:5000/api/expenses/download?from=${from}&to=${to}`;
+
+      const res = await fetch(url, {
+        headers: { Authorization: token }
+      });
+
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = 'expense_report.pdf';
+      link.click();
+    });
+  </script>
+</body>
+</html>

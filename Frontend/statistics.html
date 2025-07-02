@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Expense Statistics</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Expense Statistics</h1>
+
+    <form id="filter-form">
+      <select id="view">
+        <option value="month">Month</option>
+        <option value="year">Year</option>
+      </select>
+      <input type="number" id="year" placeholder="Year" required />
+      <input type="number" id="month" placeholder="Month (1-12)" />
+      <button type="submit">Show Stats</button>
+    </form>
+
+    <canvas id="barChart" width="400" height="200"></canvas>
+    <canvas id="pieChart" width="400" height="200"></canvas>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    const API = 'http://localhost:5000/api/expenses';
+
+    document.getElementById('filter-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const view = document.getElementById('view').value;
+      const year = document.getElementById('year').value;
+      const month = document.getElementById('month').value;
+
+      let url = `${API}?view=${view}&year=${year}`;
+      if (month) url += `&month=${month}`;
+
+      const res = await fetch(url, {
+        headers: { 'Authorization': token }
+      });
+      const data = await res.json();
+
+      const expenseMap = {};
+      data.expenses.forEach(exp => {
+        const date = new Date(exp.date);
+        const label = view === "year" 
+          ? date.toLocaleString('default', { month: 'short' }) 
+          : date.getDate();
+
+        expenseMap[label] = (expenseMap[label] || 0) + exp.amount;
+      });
+
+      const labels = Object.keys(expenseMap);
+      const values = Object.values(expenseMap);
+
+      drawBarChart(labels, values);
+      drawPieChart(labels, values);
+    });
+
+    function drawBarChart(labels, values) {
+      const ctx = document.getElementById('barChart').getContext('2d');
+      if (window.bar) window.bar.destroy();
+      window.bar = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Expenses',
+            data: values,
+            backgroundColor: '#4e73df',
+          }]
+        }
+      });
+    }
+
+    function drawPieChart(labels, values) {
+      const ctx = document.getElementById('pieChart').getContext('2d');
+      if (window.pie) window.pie.destroy();
+      window.pie = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: labels.map(() => `hsl(${Math.random() * 360}, 70%, 60%)`)
+          }]
+        }
+      });
+    }
+  </script>
+</body>
+</html>
