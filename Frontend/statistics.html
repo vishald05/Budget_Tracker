@@ -1,96 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Expense Statistics</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Statistics | Budget Tracker</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #17153B;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: #2E236C;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      z-index: 1000;
+    }
+
+    .nav-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #C8ACD6;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-links button {
+      background-color: #433D8B;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .nav-links button:hover {
+      background-color: #5c4eb3;
+    }
+
+    .container {
+      margin-top: 7rem;
+      max-width: 1000px;
+      margin-inline: auto;
+      background-color: #2E236C;
+      padding: 2rem;
+      border-radius: 10px;
+    }
+
+    select, input {
+      margin-right: 1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    canvas {
+      margin-top: 2rem;
+      background-color: #fff;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Expense Statistics</h1>
 
-    <form id="filter-form">
-      <select id="view">
+  <div class="navbar">
+    <div class="nav-title">Budget Tracker</div>
+    <div class="nav-links">
+      <button onclick="location.href='dashboard.html'">Dashboard</button>
+      <button onclick="location.href='profile.html'">Profile</button>
+      <button onclick="location.href='download.html'">Download</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>View Your Expense Statistics</h2>
+    <form id="view-form">
+      <select id="view" required>
         <option value="month">Month</option>
         <option value="year">Year</option>
       </select>
       <input type="number" id="year" placeholder="Year" required />
       <input type="number" id="month" placeholder="Month (1-12)" />
-      <button type="submit">Show Stats</button>
+      <button type="submit">View</button>
     </form>
 
-    <canvas id="barChart" width="400" height="200"></canvas>
-    <canvas id="pieChart" width="400" height="200"></canvas>
+    <canvas id="pieChart" width="400" height="300"></canvas>
+    <canvas id="barChart" width="400" height="300" style="display: none;"></canvas>
   </div>
 
   <script>
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
 
-    const API = 'http://localhost:5000/api/expenses';
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    }
 
-    document.getElementById('filter-form').addEventListener('submit', async (e) => {
+    const viewForm = document.getElementById('view-form');
+    const pieChartCanvas = document.getElementById('pieChart');
+    const barChartCanvas = document.getElementById('barChart');
+    let pieChart, barChart;
+
+    viewForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const view = document.getElementById('view').value;
       const year = document.getElementById('year').value;
       const month = document.getElementById('month').value;
 
-      let url = `${API}?view=${view}&year=${year}`;
-      if (month) url += `&month=${month}`;
+      let url = `http://localhost:5000/api/expenses?view=${view}&year=${year}`;
+      if (view === 'month') {
+        url += `&month=${month}`;
+        barChartCanvas.style.display = 'none';
+      } else {
+        barChartCanvas.style.display = 'block';
+      }
 
       const res = await fetch(url, {
         headers: { 'Authorization': token }
       });
       const data = await res.json();
 
-      const expenseMap = {};
+      const grouped = {};
+      const monthTotals = {};
+
       data.expenses.forEach(exp => {
-        const date = new Date(exp.date);
-        const label = view === "year" 
-          ? date.toLocaleString('default', { month: 'short' }) 
-          : date.getDate();
+        // pie: group by description
+        const desc = exp.description || 'No Description';
+        grouped[desc] = (grouped[desc] || 0) + exp.amount;
 
-        expenseMap[label] = (expenseMap[label] || 0) + exp.amount;
-      });
-
-      const labels = Object.keys(expenseMap);
-      const values = Object.values(expenseMap);
-
-      drawBarChart(labels, values);
-      drawPieChart(labels, values);
-    });
-
-    function drawBarChart(labels, values) {
-      const ctx = document.getElementById('barChart').getContext('2d');
-      if (window.bar) window.bar.destroy();
-      window.bar = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Expenses',
-            data: values,
-            backgroundColor: '#4e73df',
-          }]
+        // bar: group by month (only for yearly view)
+        if (view === 'year') {
+          const m = new Date(exp.date).getMonth(); // 0-indexed
+          monthTotals[m] = (monthTotals[m] || 0) + exp.amount;
         }
       });
-    }
 
-    function drawPieChart(labels, values) {
-      const ctx = document.getElementById('pieChart').getContext('2d');
-      if (window.pie) window.pie.destroy();
-      window.pie = new Chart(ctx, {
+      // PIE CHART
+      if (pieChart) pieChart.destroy();
+      pieChart = new Chart(pieChartCanvas, {
         type: 'pie',
         data: {
-          labels,
+          labels: Object.keys(grouped),
           datasets: [{
-            data: values,
-            backgroundColor: labels.map(() => `hsl(${Math.random() * 360}, 70%, 60%)`)
+            data: Object.values(grouped),
+            backgroundColor: [
+              '#C8ACD6', '#433D8B', '#5c4eb3', '#2E236C', '#8976B1', '#A289BD'
+            ],
           }]
+        },
+        options: {
+          plugins: {
+            legend: { labels: { color: "#fff" } }
+          }
         }
       });
-    }
+
+      // BAR CHART (for year)
+      if (view === 'year') {
+        const labels = [...Array(12)].map((_, i) => new Date(0, i).toLocaleString('default', { month: 'short' }));
+        const values = labels.map((_, i) => monthTotals[i] || 0);
+
+        if (barChart) barChart.destroy();
+        barChart = new Chart(barChartCanvas, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Monthly Expense ₹',
+              data: values,
+              backgroundColor: '#8976B1'
+            }]
+          },
+          options: {
+            scales: {
+              x: { ticks: { color: '#fff' } },
+              y: { ticks: { color: '#fff' } }
+            },
+            plugins: {
+              legend: { labels: { color: "#fff" } }
+            }
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>

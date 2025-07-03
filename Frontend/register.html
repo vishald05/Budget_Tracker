@@ -1,19 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register | Budget Tracker</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #17153B;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #C8ACD6;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 4px #C8ACD6;
+    }
+
+    .register-box {
+      background: rgba(46, 35, 108, 0.9);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(200, 172, 214, 0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .register-box label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #C8ACD6;
+    }
+
+    .register-box input {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      margin-top: 0.3rem;
+      font-size: 1rem;
+    }
+
+    .register-box button {
+      width: 100%;
+      margin-top: 1.5rem;
+      background-color: #433D8B;
+      color: #fff;
+      border: none;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .register-box button:hover {
+      background-color: #5c4eb3;
+    }
+
+    .register-box .link {
+      margin-top: 1rem;
+      display: block;
+      text-align: center;
+      color: #C8ACD6;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .emoji {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
 <body>
-  <div class="auth-container">
-    <h2>Create Account</h2>
+  <!-- <div class="emoji">📝</div> -->
+  <h1>Register Account</h1>
+  <br>
+  <div class="register-box">
     <form id="register-form">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <input type="number" id="income" placeholder="Monthly Income (₹)" required />
+      <label for="email">Email</label>
+      <input type="email" id="email" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required />
+
+      <label for="income">Initial Income (₹)</label>
+      <input type="number" id="income" required />
+
       <button type="submit">Register</button>
     </form>
-    <p>Already have an account? <a href="login.html">Login</a></p>
+    <a href="login.html" class="link">Already have an account? Login</a>
   </div>
 
   <script>
@@ -30,11 +115,12 @@
       });
 
       const data = await res.json();
+
       if (res.ok) {
-        alert("Registered successfully!");
+        alert('Registration successful!');
         window.location.href = 'login.html';
       } else {
-        alert(data.msg || "Registration failed");
+        alert(data.msg || 'Failed to register');
       }
     });
   </script>

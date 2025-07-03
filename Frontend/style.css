@@ -35,3 +35,57 @@ a {
   color: #4e73df;
   text-decoration: none;
 }
+
+.navbar {
+  background-color: #2E236C;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #433D8B;
+}
+
+.nav-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #C8ACD6;
+  text-align: center;
+  flex: 1;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links button {
+  background-color: #433D8B;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.nav-links button:hover {
+  background-color: #5c4eb3;
+}
+
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #433D8B;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.expense-item button {
+  background: none;
+  border: none;
+  color: #ff9999;
+  font-size: 1.2rem;
+  cursor: pointer;
+}

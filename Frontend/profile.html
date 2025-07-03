@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Download Report | Budget Tracker</title>
+  <title>Profile | Budget Tracker</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       margin: 0;
@@ -43,17 +44,16 @@
 
     .container {
       max-width: 600px;
-      margin: 4rem auto;
+      margin: 3rem auto;
       padding: 2rem;
       background-color: #2E236C;
       border-radius: 10px;
-      box-shadow: 0 0 12px rgba(200, 172, 214, 0.2);
+      box-shadow: 0 0 10px rgba(200, 172, 214, 0.2);
     }
 
-    h2 {
+    .container h2 {
       color: #C8ACD6;
       margin-bottom: 2rem;
-      text-align: center;
     }
 
     .form-group {
@@ -78,12 +78,10 @@
       background-color: #433D8B;
       color: white;
       border: none;
-      padding: 0.75rem 2rem;
+      padding: 0.75rem 1.5rem;
       font-size: 1rem;
       border-radius: 6px;
       cursor: pointer;
-      display: block;
-      margin: 2rem auto 0;
     }
 
     .submit-btn:hover {
@@ -96,26 +94,24 @@
     <h1>Budget Tracker</h1>
     <div class="nav-links">
       <button onclick="location.href='dashboard.html'">Dashboard</button>
-      <button onclick="location.href='statistics.html'">Statistics</button>
-      <button onclick="location.href='profile.html'">Profile</button>
       <button onclick="logout()">Logout</button>
     </div>
   </div>
 
   <div class="container">
-    <h2>Download Expense Report</h2>
-    <form id="download-form">
+    <h2>Update Profile</h2>
+    <form id="profile-form">
       <div class="form-group">
-        <label for="from">From Date</label>
-        <input type="date" id="from" required />
+        <label for="income">Monthly Income (₹)</label>
+        <input type="number" id="income" required />
       </div>
 
       <div class="form-group">
-        <label for="to">To Date</label>
-        <input type="date" id="to" required />
+        <label for="password">New Password</label>
+        <input type="password" id="password" />
       </div>
 
-      <button type="submit" class="submit-btn">Download PDF</button>
+      <button class="submit-btn" type="submit">Update Profile</button>
     </form>
   </div>
 
@@ -123,33 +119,32 @@
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
 
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const income = document.getElementById('income').value;
+      const password = document.getElementById('password').value;
+
+      const res = await fetch('http://localhost:5000/api/users/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({ income, password })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert('Profile updated successfully');
+      } else {
+        alert(data.msg || 'Failed to update profile');
+      }
+    });
+
     function logout() {
       localStorage.removeItem('token');
       window.location.href = 'login.html';
     }
-
-    document.getElementById('download-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const from = document.getElementById('from').value;
-      const to = document.getElementById('to').value;
-
-      try {
-        const res = await fetch(`http://localhost:5000/api/expenses/download?from=${from}&to=${to}`, {
-          headers: { 'Authorization': token }
-        });
-
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `expenses_${from}_to_${to}.pdf`;
-        link.click();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        alert('Something went wrong while downloading!');
-      }
-    });
   </script>
 </body>
 </html>
