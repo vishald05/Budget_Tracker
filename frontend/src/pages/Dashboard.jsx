@@ -1,32 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ref, onValue, push } from 'firebase/database';
+import { db } from '../firebase';
 
-const Dashboard = () => {
-    const [transactions, setTransactions] = useState(() => {
-        const saved = localStorage.getItem('budget_transactions');
-        return saved ? JSON.parse(saved) : [];
-    });
-
+const Dashboard = ({ user }) => {
+    const [transactions, setTransactions] = useState([]);
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
     const [type, setType] = useState('expense'); 
 
     useEffect(() => {
-        localStorage.setItem('budget_transactions', JSON.stringify(transactions));
-        window.dispatchEvent(new Event('storage'));
-    }, [transactions]);
+        if (!user) return;
+        const txRef = ref(db, `transactions/${user.uid}`);
+        const unsubscribe = onValue(txRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const loadedTransactions = Object.entries(data).map(([id, val]) => ({
+                    id,
+                    ...val
+                }));
+                // Sort descending by timestamp
+                loadedTransactions.sort((a, b) => b.timestamp - a.timestamp);
+                setTransactions(loadedTransactions);
+            } else {
+                setTransactions([]);
+            }
+        });
+        return () => unsubscribe();
+    }, [user]);
 
     const handleAdd = (e) => {
         e.preventDefault();
-        if (!amount || !category) return;
+        if (!amount || !category || !user) return;
+        
         const newTx = {
-            id: Date.now(),
             amount: parseFloat(amount),
             category,
             type,
-            date: new Date().toLocaleDateString()
+            date: new Date().toLocaleDateString(),
+            timestamp: Date.now()
         };
-        setTransactions([...transactions, newTx]);
+        
+        const txRef = ref(db, `transactions/${user.uid}`);
+        push(txRef, newTx);
+        
         setAmount('');
         setCategory('');
     };
@@ -106,7 +123,7 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold mb-4 border-b pb-2">Recent Transactions</h2>
                 {transactions.length > 0 ? (
                     <ul className="divide-y divide-gray-200">
-                        {transactions.slice().reverse().map(tx => (
+                        {transactions.map(tx => (
                             <li key={tx.id} className="py-3 flex justify-between items-center">
                                 <div>
                                     <p className="font-semibold">{tx.category}</p>

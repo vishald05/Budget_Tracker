@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const Login = () => {
-    const [identifier, setIdentifier] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -11,12 +12,10 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:5000/api/login', { identifier, password });
-            localStorage.setItem('user', JSON.stringify({ username: res.data.username }));
+            await signInWithEmailAndPassword(auth, email, password);
             navigate('/');
-            window.location.reload(); 
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            setError(err.message || 'Login failed');
         }
     };
 
@@ -27,8 +26,8 @@ const Login = () => {
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                 
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Username or Email</label>
-                    <input type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value)} required
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300" />
                 </div>
                 

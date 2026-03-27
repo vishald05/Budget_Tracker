@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -17,10 +18,13 @@ const Register = () => {
             return;
         }
         try {
-            await axios.post('http://localhost:5000/api/register', { username, email, password });
-            navigate('/login');
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCredential.user, {
+                displayName: username
+            });
+            navigate('/');
         } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed');
+            setError(err.message || 'Registration failed');
         }
     };
 

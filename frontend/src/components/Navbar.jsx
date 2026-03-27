@@ -1,38 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Wallet, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { LogOut, Wallet, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { ref, onValue } from 'firebase/database';
+import { auth, db } from '../firebase';
 
-const Navbar = () => {
+const Navbar = ({ user }) => {
     const navigate = useNavigate();
     const [summary, setSummary] = useState({ income: 0, expense: 0, balance: 0 });
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-    const updateTotals = () => {
-        const currentData = JSON.parse(localStorage.getItem('budget_transactions') || '[]');
-        let totalInc = 0;
-        let totalExp = 0;
-        currentData.forEach(tx => {
-            if (tx.type === 'income') totalInc += tx.amount;
-            else if (tx.type === 'expense') totalExp += tx.amount;
-        });
-        setSummary({
-            income: totalInc,
-            expense: totalExp,
-            balance: totalInc - totalExp
-        });
-    };
 
     useEffect(() => {
-        updateTotals();
-        window.addEventListener('storage', updateTotals);
-        return () => window.removeEventListener('storage', updateTotals);
-    }, []);
+        if (!user) return;
+        const txRef = ref(db, `transactions/${user.uid}`);
+        const unsubscribe = onValue(txRef, (snapshot) => {
+            const data = snapshot.val();
+            let totalInc = 0;
+            let totalExp = 0;
+            if (data) {
+                Object.values(data).forEach(tx => {
+                    if (tx.type === 'income') totalInc += tx.amount;
+                    else if (tx.type === 'expense') totalExp += tx.amount;
+                });
+            }
+            setSummary({
+                income: totalInc,
+                expense: totalExp,
+                balance: totalInc - totalExp
+            });
+        });
+        return () => unsubscribe();
+    }, [user]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('user');
-        navigate('/login');
-        window.location.reload();
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            navigate('/login');
+        } catch (error) {
+            console.error("Logout error", error);
+        }
     };
+
+    const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
 
     return (
         <nav className="bg-white shadow-md border-b">
@@ -77,9 +85,9 @@ const Navbar = () => {
                     <div className="flex items-center gap-4">
                         <div className="hidden md:flex items-center gap-2">
                             <div className="h-8 w-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold uppercase">
-                                {user?.username?.charAt(0) || 'U'}
+                                {displayName.charAt(0)}
                             </div>
-                            <span className="font-medium text-gray-700">{user?.username || 'User'}</span>
+                            <span className="font-medium text-gray-700">{displayName}</span>
                         </div>
                         <button 
                             onClick={handleLogout}
