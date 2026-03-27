@@ -95,9 +95,32 @@ const Dashboard = ({ user }) => {
                         </div>
                         
                         <div className="mb-6">
-                            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Category (e.g., Food, Salary)</label>
-                            <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} required
+                            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Category</label>
+                            <input type="text" list="category-options" value={category} onChange={(e) => setCategory(e.target.value)} required placeholder="e.g., Food, Salary..."
                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                            <datalist id="category-options">
+                                {type === 'expense' ? (
+                                    <>
+                                        <option value="Food" />
+                                        <option value="Housing" />
+                                        <option value="Transportation" />
+                                        <option value="Entertainment" />
+                                        <option value="Utilities" />
+                                        <option value="Healthcare" />
+                                        <option value="Clothing" />
+                                        <option value="Personal" />
+                                        <option value="Education" />
+                                    </>
+                                ) : (
+                                    <>
+                                        <option value="Salary" />
+                                        <option value="Freelance" />
+                                        <option value="Investments" />
+                                        <option value="Gifts" />
+                                        <option value="Other Income" />
+                                    </>
+                                )}
+                            </datalist>
                         </div>
                         
                         <button type="submit" className={`w-full text-white font-bold py-2 rounded-md transition ${type === 'expense' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}>
@@ -134,7 +157,7 @@ const Dashboard = ({ user }) => {
                 <h2 className="text-xl font-semibold mb-4 border-b dark:border-gray-700 pb-2 dark:text-gray-100">Recent Transactions</h2>
                 {transactions.length > 0 ? (
                     <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                        {transactions.map(tx => (
+                        {transactions.slice(0, 5).map(tx => (
                             <li key={tx.id} className="py-3 flex justify-between items-center">
                                 <div>
                                     <p className="font-semibold dark:text-gray-200">{tx.category}</p>
