@@ -261,7 +261,7 @@ const History = ({ user }) => {
                                             </span>
                                         </td>
                                         <td className={`py-4 px-4 text-right font-bold whitespace-nowrap ${tx.type === 'expense' ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400'}`}>
-                                            {tx.type === 'expense' ? '-' : '+'}${Number(tx.amount).toFixed(2)}
+                                            {tx.type === 'expense' ? '-' : '+'}₹{Number(tx.amount).toFixed(2)}
                                         </td>
                                     </tr>
                                 ))}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Wallet, TrendingUp, TrendingDown, DollarSign, Sun, Moon } from 'lucide-react';
+import { LogOut, Wallet, TrendingUp, TrendingDown, IndianRupee, Sun, Moon } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { ref, onValue } from 'firebase/database';
 import { auth, db } from '../firebase';
@@ -76,7 +76,7 @@ const Navbar = ({ user }) => {
                             <TrendingUp className="h-4 w-4" />
                             <div className="flex flex-col">
                                 <span className="text-xs text-green-600/70 dark:text-green-400/70 uppercase font-semibold tracking-wider">Income</span>
-                                <span className="font-bold leading-none">${summary.income.toFixed(2)}</span>
+                                <span className="font-bold leading-none">₹{summary.income.toFixed(2)}</span>
                             </div>
                         </div>
                         <div className="w-px bg-gray-300 dark:bg-gray-600"></div>
@@ -84,16 +84,16 @@ const Navbar = ({ user }) => {
                             <TrendingDown className="h-4 w-4" />
                             <div className="flex flex-col">
                                 <span className="text-xs text-red-500/70 dark:text-red-400/70 uppercase font-semibold tracking-wider">Expense</span>
-                                <span className="font-bold leading-none">${summary.expense.toFixed(2)}</span>
+                                <span className="font-bold leading-none">₹{summary.expense.toFixed(2)}</span>
                             </div>
                         </div>
                         <div className="w-px bg-gray-300 dark:bg-gray-600"></div>
                         <div className="flex items-center gap-2 px-2 text-blue-700 dark:text-blue-400">
-                            <DollarSign className="h-4 w-4" />
+                            <IndianRupee className="h-4 w-4" />
                             <div className="flex flex-col">
                                 <span className="text-xs text-blue-600/70 dark:text-blue-400/70 uppercase font-semibold tracking-wider">Balance</span>
                                 <span className={`font-bold leading-none ${summary.balance < 0 ? 'text-red-500 dark:text-red-400' : ''}`}>
-                                    ${summary.balance.toFixed(2)}
+                                    ₹{summary.balance.toFixed(2)}
                                 </span>
                             </div>
                         </div>

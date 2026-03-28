@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Navbar from './components/Navbar';
 import ForgotPassword from './pages/ForgotPassword';
 import History from './pages/History';
+import Chatbot from './pages/Chatbot';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -59,6 +60,14 @@ function App() {
                >
                   History
                </NavLink>
+               <NavLink 
+                  to="/chat" 
+                  className={({isActive}) => isActive 
+                    ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 dark:border-blue-400 h-full flex items-center" 
+                    : "text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium h-full flex items-center transition"}
+               >
+                  AI Advisor
+               </NavLink>
             </div>
           </div>
         )}
@@ -68,6 +77,7 @@ function App() {
           <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
           <Route path="/forgot-password" element={user ? <Navigate to="/" /> : <ForgotPassword />} />
           <Route path="/history" element={user ? <History user={user} /> : <Navigate to="/login" />} />
+          <Route path="/chat" element={user ? <Chatbot user={user} /> : <Navigate to="/login" />} />
           <Route path="/" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
         </Routes>
       </div>

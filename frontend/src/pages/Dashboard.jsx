@@ -141,7 +141,7 @@ const Dashboard = ({ user }) => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip formatter={(value) => `$${value}`} contentStyle={{ backgroundColor: '#1f2937', color: '#f3f4f6', border: 'none', borderRadius: '8px' }} />
+                                    <Tooltip formatter={(value) => `₹${value}`} contentStyle={{ backgroundColor: '#1f2937', color: '#f3f4f6', border: 'none', borderRadius: '8px' }} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -164,7 +164,7 @@ const Dashboard = ({ user }) => {
                                     <p className="text-xs text-gray-500 dark:text-gray-400">{tx.date}</p>
                                 </div>
                                 <span className={`font-bold ${tx.type === 'expense' ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400'}`}>
-                                    {tx.type === 'expense' ? '-' : '+'}${tx.amount.toFixed(2)}
+                                    {tx.type === 'expense' ? '-' : '+'}₹{tx.amount.toFixed(2)}
                                 </span>
                             </li>
                         ))}
