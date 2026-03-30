@@ -2,6 +2,8 @@
 
 A modern, serverless, and highly interactive Budget Tracking application designed to help you monitor your finances, visualize your spending trends, and get personalized financial advice using Artificial Intelligence.
 
+🚀 **Live Demo:** [https://budgettracker-pubj.onrender.com](https://budgettracker-pubj.onrender.com)
+
 ## ✨ Features
 
 ### 🔐 Authentication & Security
