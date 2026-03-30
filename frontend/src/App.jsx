@@ -9,6 +9,7 @@ import Navbar from './components/Navbar';
 import ForgotPassword from './pages/ForgotPassword';
 import History from './pages/History';
 import Chatbot from './pages/Chatbot';
+import Landing from './pages/Landing';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -78,7 +79,7 @@ function App() {
           <Route path="/forgot-password" element={user ? <Navigate to="/" /> : <ForgotPassword />} />
           <Route path="/history" element={user ? <History user={user} /> : <Navigate to="/login" />} />
           <Route path="/chat" element={user ? <Chatbot user={user} /> : <Navigate to="/login" />} />
-          <Route path="/" element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} />
+          <Route path="/" element={user ? <Dashboard user={user} /> : <Landing />} />
         </Routes>
       </div>
     </Router>
