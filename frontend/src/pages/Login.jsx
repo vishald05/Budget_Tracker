@@ -20,34 +20,31 @@ const Login = () => {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
-            <form onSubmit={handleLogin} className="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md w-96 transition-colors duration-200">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">Login</h2>
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        <div className="auth-shell"><aside className="auth-aside"><div className="brand"><span className="brand-mark">₹</span><span className="brand-name">BudgetTracker</span></div><div><span className="eyebrow">A calmer ledger</span><h1>Know where your money is going.</h1><p>Keep a clear, private record of the choices behind each rupee.</p></div></aside>
+          <div className="auth-panel"><form onSubmit={handleLogin} className="auth-form">
+                <span className="eyebrow">Welcome back</span><h2>Sign in</h2><p className="page-intro">Pick up where you left off.</p>
+                {error && <p className="alert">{error}</p>}
                 
-                <div className="mb-4">
-                    <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Email</label>
+                <div className="field">
+                    <label>Email</label>
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                           />
                 </div>
                 
-                <div className="mb-6">
-                    <div className="flex justify-between items-center mb-2">
-                        <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold">Password</label>
-                        <Link to="/forgot-password" className="text-xs text-blue-500 hover:underline">Forgot Password?</Link>
+                <div className="field">
+                    <div className="flex justify-between items-center"><label>Password</label>
+                        <Link to="/forgot-password" className="auth-link">Forgot password?</Link>
                     </div>
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required
-                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                           />
                 </div>
                 
-                <button type="submit" className="w-full bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition">
-                    Login
+                <button type="submit" className="primary-button">Sign in
                 </button>
                 
-                <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-                    Don't have an account? <Link to="/register" className="text-blue-500 hover:underline">Register</Link>
+                <p className="auth-footer">Don't have an account? <Link to="/register" className="auth-link">Create one</Link>
                 </p>
-            </form>
+            </form></div>
         </div>
     );
 };

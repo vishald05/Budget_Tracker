@@ -121,34 +121,35 @@ const History = ({ user }) => {
     };
 
     return (
-        <div className="container mx-auto p-6 max-w-6xl transition-colors duration-200">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Transaction History</h1>
+        <main className="page-width">
+            <span className="eyebrow">Your ledger</span>
+            <div className="section-heading">
+                <div><h1 className="page-title">Transaction history</h1><p className="page-intro">Filter the record, compare the movement, or take a copy with you.</p></div>
                 
                 {/* Export Buttons */}
-                <div className="flex gap-3">
-                    <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md font-bold shadow-sm transition-colors text-sm">
+                <div className="toolbar-actions">
+                    <button onClick={exportCSV} className="secondary-button">
                         <Download size={18} /> CSV
                     </button>
-                    <button onClick={exportJSON} className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-md font-bold shadow-sm transition-colors text-sm">
+                    <button onClick={exportJSON} className="secondary-button">
                         <FileJson size={18} /> JSON
                     </button>
                 </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-200 mb-8">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Filters & Controls</h2>
+            <div className="surface surface-pad">
+                <div className="section-heading"><h2>Filter the record</h2><span className="eyebrow">Controls</span></div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="history-toolbar">
                     {/* Basic Type Filter */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-semibold text-gray-600 dark:text-gray-300">Transaction Type</label>
-                        <div className="flex gap-2">
+                    <div className="field">
+                        <label>Transaction type</label>
+                        <div className="segmented">
                             {['all', 'expense', 'income'].map(type => (
                                 <button 
                                     key={type}
                                     onClick={() => setTypeFilter(type)} 
-                                    className={`flex-1 py-2 rounded-md font-bold transition-colors capitalize ${typeFilter === type ? (type === 'expense' ? 'bg-red-500 text-white' : type === 'income' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white') : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                                    className={typeFilter === type ? 'active' : ''}
                                 >
                                     {type}
                                 </button>
@@ -157,12 +158,12 @@ const History = ({ user }) => {
                     </div>
 
                     {/* Date Time Filter */}
-                    <div className="flex flex-col gap-2 w-full">
-                        <label className="text-sm font-semibold text-gray-600 dark:text-gray-300">Date Range</label>
+                    <div className="field">
+                        <label>Date range</label>
                         <select 
                             value={dateRangeFilter}
                             onChange={(e) => setDateRangeFilter(e.target.value)}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white font-semibold"
+                            className="field-input"
                         >
                             <option value="all">All Time</option>
                             <option value="thisMonth">This Month</option>
@@ -177,28 +178,28 @@ const History = ({ user }) => {
                                     type="date" 
                                     value={customRange.start}
                                     onChange={(e) => setCustomRange({...customRange, start: e.target.value})}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-1"
+                                    className="field-input"
                                 />
                                 <span className="text-gray-500 self-center">to</span>
                                 <input 
                                     type="date" 
                                     value={customRange.end}
                                     onChange={(e) => setCustomRange({...customRange, end: e.target.value})}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white flex-1"
+                                    className="field-input"
                                 />
                             </div>
                         )}
                     </div>
                     
                     {/* Chart Grouping Control */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-semibold text-gray-600 dark:text-gray-300">Graph Grouping</label>
-                        <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+                    <div className="field">
+                        <label>Group chart by</label>
+                        <div className="segmented">
                             {['day', 'week', 'month', 'year'].map(group => (
                                 <button 
                                     key={group}
                                     onClick={() => setChartGrouping(group)} 
-                                    className={`flex-1 py-1.5 text-sm rounded-md font-bold transition-all capitalize ${chartGrouping === group ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
+                                    className={chartGrouping === group ? 'active' : ''}
                                 >
                                     {group}
                                 </button>
@@ -209,8 +210,8 @@ const History = ({ user }) => {
             </div>
 
             {/* Dynamic Interactive Chart */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-200 mb-8 h-[400px]">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Trend Overview</h2>
+            <div className="surface surface-pad chart-panel">
+                <div className="section-heading"><h2>Movement over time</h2><span className="eyebrow">{chartGrouping}</span></div>
                 {chartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -230,18 +231,18 @@ const History = ({ user }) => {
                         </BarChart>
                     </ResponsiveContainer>
                 ) : (
-                    <div className="h-full flex items-center justify-center text-gray-500 pb-12">
+                    <div className="empty-state">
                         No graph data available for the chosen filters.
                     </div>
                 )}
             </div>
 
             {/* History Table */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-200">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Detailed Transactions</h2>
+            <div className="surface surface-pad">
+                <div className="section-heading"><h2>Detailed transactions</h2><span className="eyebrow">{filteredTransactions.length} shown</span></div>
                 {filteredTransactions.length > 0 ? (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                    <div className="table-wrap">
+                        <table className="ledger">
                             <thead>
                                 <tr className="border-b-2 dark:border-gray-700">
                                     <th className="py-3 px-4 text-gray-700 dark:text-gray-300 font-semibold">Date</th>
@@ -269,12 +270,12 @@ const History = ({ user }) => {
                         </table>
                     </div>
                 ) : (
-                    <div className="py-12 text-center">
-                        <p className="text-gray-500 dark:text-gray-400 text-lg">No transactions match these rules.</p>
+                    <div className="empty-state">
+                        <p>No transactions match these filters.</p>
                     </div>
                 )}
             </div>
-        </div>
+        </main>
     );
 };
 

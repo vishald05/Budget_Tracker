@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Plus } from 'lucide-react';
 import { ref, onValue, push } from 'firebase/database';
 import { db } from '../firebase';
 
@@ -60,44 +61,46 @@ const Dashboard = ({ user }) => {
     const COLORS = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6'];
 
     return (
-        <div className="container mx-auto p-6 max-w-6xl transition-colors duration-200">
-            <h1 className="text-3xl font-bold mb-8 text-gray-800 dark:text-white">Dashboard</h1>
+        <main className="page-width">
+            <span className="eyebrow">Overview</span>
+            <h1 className="page-title">Your money, at a glance.</h1>
+            <p className="page-intro">A simple place to keep the record straight. Add a transaction, then use the signals below to decide what deserves your attention.</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="dashboard-grid">
                 {/* Form Section */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-200">
-                    <h2 className="text-xl font-semibold mb-4 border-b dark:border-gray-700 pb-2 dark:text-gray-100">Add Transaction</h2>
-                    <form onSubmit={handleAdd}>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Type</label>
-                            <div className="flex gap-4">
+                <div className="surface surface-pad">
+                    <div className="section-heading"><h2>New transaction</h2><span className="eyebrow">Quick entry</span></div>
+                    <form onSubmit={handleAdd} className="form-grid">
+                        <div className="field">
+                            <label>Transaction type</label>
+                            <div className="type-switch">
                                 <button
                                     type="button"
                                     onClick={() => setType('expense')}
-                                    className={`flex-1 py-2 rounded-md font-bold transition-colors ${type === 'expense' ? 'bg-red-500 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                                    className={type === 'expense' ? 'active expense' : ''}
                                 >
                                     Expense
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setType('income')}
-                                    className={`flex-1 py-2 rounded-md font-bold transition-colors ${type === 'income' ? 'bg-green-500 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                                    className={type === 'income' ? 'active income' : ''}
                                 >
                                     Income
                                 </button>
                             </div>
-                        </div>
+                            </div>
                         
-                        <div className="mb-4">
-                            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Amount</label>
+                        <div className="field">
+                            <label>Amount (₹)</label>
                             <input type="number" min="0.01" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} required
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                                className="field-input" />
                         </div>
                         
-                        <div className="mb-6">
-                            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Category</label>
+                        <div className="field">
+                            <label>Category</label>
                             <input type="text" list="category-options" value={category} onChange={(e) => setCategory(e.target.value)} required placeholder="e.g., Food, Salary..."
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                                className="field-input" />
                             <datalist id="category-options">
                                 {type === 'expense' ? (
                                     <>
@@ -123,17 +126,17 @@ const Dashboard = ({ user }) => {
                             </datalist>
                         </div>
                         
-                        <button type="submit" className={`w-full text-white font-bold py-2 rounded-md transition ${type === 'expense' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}>
-                            Add {type === 'expense' ? 'Expense' : 'Income'}
+                        <button type="submit" className="primary-button">
+                            <Plus size={17} /> Add {type === 'expense' ? 'expense' : 'income'}
                         </button>
                     </form>
                 </div>
 
                 {/* Graph Section */}
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-200">
-                    <h2 className="text-xl font-semibold mb-4 border-b dark:border-gray-700 pb-2 dark:text-gray-100">Expenses Breakdown</h2>
+                <div className="surface surface-pad">
+                    <div className="section-heading"><h2>Where spending goes</h2><span className="eyebrow">By category</span></div>
                     {expenseData.length > 0 ? (
-                        <div className="h-64">
+                        <div className="chart-wrap">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={expenseData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} fill="#8884d8" paddingAngle={5} dataKey="value" label>
@@ -147,33 +150,33 @@ const Dashboard = ({ user }) => {
                             </ResponsiveContainer>
                         </div>
                     ) : (
-                        <p className="text-gray-500 dark:text-gray-400 text-center mt-10">No expenses to display yet.</p>
+                        <div className="empty-state"><p>No expenses yet. Add your first one to see the pattern.</p></div>
                     )}
                 </div>
             </div>
 
             {/* Recent Transactions List */}
-            <div className="mt-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-200">
-                <h2 className="text-xl font-semibold mb-4 border-b dark:border-gray-700 pb-2 dark:text-gray-100">Recent Transactions</h2>
+            <div className="surface surface-pad recent">
+                <div className="section-heading"><h2>Recent activity</h2><span className="eyebrow">Last five</span></div>
                 {transactions.length > 0 ? (
-                    <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <ul className="transaction-list">
                         {transactions.slice(0, 5).map(tx => (
-                            <li key={tx.id} className="py-3 flex justify-between items-center">
-                                <div>
-                                    <p className="font-semibold dark:text-gray-200">{tx.category}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">{tx.date}</p>
+                            <li key={tx.id} className="transaction-row">
+                                <div className="transaction-meta">
+                                    <strong>{tx.category}</strong>
+                                    <span>{tx.date}</span>
                                 </div>
-                                <span className={`font-bold ${tx.type === 'expense' ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400'}`}>
+                                <span className={`amount ${tx.type}`}>
                                     {tx.type === 'expense' ? '-' : '+'}₹{tx.amount.toFixed(2)}
                                 </span>
                             </li>
                         ))}
                     </ul>
                 ) : (
-                    <p className="text-gray-500 dark:text-gray-400">No transactions recorded.</p>
+                    <div className="empty-state"><p>No transactions recorded. Your ledger starts with the first entry.</p></div>
                 )}
             </div>
-        </div>
+        </main>
     );
 };
 

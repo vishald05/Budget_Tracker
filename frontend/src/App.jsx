@@ -31,41 +31,33 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">Loading...</div>;
-  }
+  if (loading) return <div className="app-shell empty-state">Loading your ledger…</div>;
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+      <div className="app-shell">
         {user && <Navbar user={user} />}
         
         {/* Sub-navbar for pages */}
         {user && (
-          <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
-            <div className="max-w-7xl mx-auto flex gap-8 h-12 items-center">
+          <div className="subnav">
+            <div className="subnav-inner">
                <NavLink 
                   to="/" 
-                  className={({isActive}) => isActive 
-                    ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 dark:border-blue-400 h-full flex items-center" 
-                    : "text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium h-full flex items-center transition"}
+                  className={({isActive}) => isActive ? "active" : ""}
                   end
                >
                   Dashboard
                </NavLink>
                <NavLink 
                   to="/history" 
-                  className={({isActive}) => isActive 
-                    ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 dark:border-blue-400 h-full flex items-center" 
-                    : "text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium h-full flex items-center transition"}
+                  className={({isActive}) => isActive ? "active" : ""}
                >
                   History
                </NavLink>
                <NavLink 
                   to="/chat" 
-                  className={({isActive}) => isActive 
-                    ? "text-blue-600 dark:text-blue-400 font-bold border-b-2 border-blue-600 dark:border-blue-400 h-full flex items-center" 
-                    : "text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium h-full flex items-center transition"}
+                  className={({isActive}) => isActive ? "active" : ""}
                >
                   AI Advisor
                </NavLink>
